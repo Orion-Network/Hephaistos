@@ -20,5 +20,10 @@
   "bugs": {
     "url": "https://github.com/Orion-Network/Hephaistos/issues"
   },
-  "homepage": "https://github.com/Orion-Network/Hephaistos#readme"
+  "homepage": "https://github.com/Orion-Network/Hephaistos#readme",
+  "dependencies": {
+    "async": "^3.2.3",
+    "fs-extra": "^10.1.0",
+    "glob": "^8.0.3"
+  }
 }
