@@ -9,7 +9,7 @@ async function generate_json(dir, pack_identifier, search_result) {
         if(!sound_json.hasOwnProperty(identifier))
             sound_json[identifier] = {replace: true, sounds: []};
         for(let sound in search_result[key]) {
-            sound_json[identifier].sounds.push({name:`${pack_identifier}:${search_result[key][sound].path.replace(dir, '')}/${search_result[key][sound].name}`});
+            sound_json[identifier].sounds.push({name:`${pack_identifier}:${search_result[key][sound].path.replace(dir, '')}/${search_result[key][sound].name.replace(".ogg","")}`});
         }
     }   
 
