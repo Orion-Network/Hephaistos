@@ -7,7 +7,7 @@ const recursive_search = require("./utils/recursive_search");
 //const writeFile = promisify(fs.writeFile);
 const mkdir = promisify(fs.mkdir);
 
-const sound_json = {}
+let sound_json;
 
 async function generate_json(dir, pack_identifier, search_result) {
     for(let key in search_result) {
@@ -21,7 +21,8 @@ async function generate_json(dir, pack_identifier, search_result) {
 
 }
 
-async function build_sounds(build_name, pack_identifier, params) {
+async function build_sounds(build_name, pack_identifier) {
+    sound_json = {}
     const dir = "/assets/sounds/"
     return new Promise((resolve, reject) => {
         async.waterfall([
@@ -60,21 +61,6 @@ async function build_sounds(build_name, pack_identifier, params) {
             resolve()
         })
     })
-    const search_result = await recursive_search(process.cwd()+dir);
-
-    await generate_json(dir, pack_identifier, search_result)
-
-    fs.mkdir(process.cwd()+`/build/${build_name}/assets/${pack_identifier}`, {recursive: true}, (err) => {
-        if(err) console.log(err)
-        fs.writeFile(process.cwd()+`/build/${build_name}/assets/${pack_identifier}/sounds.json`, JSON.stringify(sound_json, null, 4), (err) => {
-            if(err) console.log(err)
-        })
-    })
-
-    console.log(`${pack_identifier} sounds generated`)
-
-    fse.copySync(process.cwd()+`/assets/sounds`, process.cwd()+`/build/${build_name}/assets/${pack_identifier}/sounds/`)
-    console.log(`${pack_identifier} sounds copied`)
 }
 
 module.exports = build_sounds;
