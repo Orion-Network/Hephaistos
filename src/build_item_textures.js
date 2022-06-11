@@ -17,12 +17,16 @@ async function generate_json(pack_identifier, path, texture_name) {
 
 
 async function build_textures(build_name, pack_identifier) {
-    const dir = `/assets/textures/`;
+    const dir = `/assets/textures/item/`;
     const associations = require(process.cwd()+"/assets/config/tm_associations.json")
     let search_result = await recursive_search(process.cwd()+dir)
 
     for(let key in search_result) {
-        let key_association = associations[key.replace('/assets/textures/', '').replaceAll("/", ".")]
+        let key_association = associations[key.replace(dir, '').replaceAll("/", ".")]
+        if(!associations.hasOwnProperty(key.replace(dir, '').replaceAll("/", "."))) {
+            console.log(`${key.replace(dir, '').replaceAll("/", ".")} is not associated to any model`)
+            continue
+        }
         let parent_json = {parent: "item/handheld", textures:{layer0: key_association.model}, overrides: []}
         let i = 1;
         for(let item in search_result[key]) {
@@ -31,8 +35,8 @@ async function build_textures(build_name, pack_identifier) {
             parent_json.overrides.push({predicate: {custom_model_data: i++}, model: generate_path(pack_identifier, path, texture_name)})
 
             let json = await generate_json(pack_identifier, path, texture_name)
-            fs.mkdir(process.cwd()+`/build/${build_name}/assets/${pack_identifier}/models/${key.replace('/assets/textures/','')}`, {recursive: true}, (err) => {
-                fs.writeFile(process.cwd()+`/build/${build_name}/assets/${pack_identifier}/models/${key.replace('/assets/textures/','')}/${search_result[key][item].name.replace(".png","")}.json`, JSON.stringify(json, null, 4), (err) => {
+            fs.mkdir(process.cwd()+`/build/${build_name}/assets/${pack_identifier}/models/${key.replace(dir,'')}`, {recursive: true}, (err) => {
+                fs.writeFile(process.cwd()+`/build/${build_name}/assets/${pack_identifier}/models/${key.replace(dir,'')}/${search_result[key][item].name.replace(".png","")}.json`, JSON.stringify(json, null, 4), (err) => {
                     if(err) console.log(err)
                 })
             })
@@ -44,7 +48,7 @@ async function build_textures(build_name, pack_identifier) {
             })
         })
     }
-    fse.copySync(process.cwd()+`/assets/textures/`, process.cwd()+`/build/${build_name}/assets/${pack_identifier}/textures/`)
+    fse.copySync(process.cwd()+dir, process.cwd()+`/build/${build_name}/assets/${pack_identifier}/textures/`)
 }
 
 module.exports = build_textures
