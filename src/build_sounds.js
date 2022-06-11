@@ -9,7 +9,7 @@ const mkdir = promisify(fs.mkdir);
 
 let sound_json;
 
-async function generate_json(dir, pack_identifier, search_result) {
+function generate_json(dir, pack_identifier, search_result) {
     for(let key in search_result) {
         let identifier = key.replace(dir,'').replaceAll("/", ".");
         if(!sound_json.hasOwnProperty(identifier))
@@ -21,14 +21,14 @@ async function generate_json(dir, pack_identifier, search_result) {
 
 }
 
-async function build_sounds(build_name, pack_identifier) {
+function build_sounds(build_name, pack_identifier) {
     sound_json = {}
     const dir = "/assets/sounds/"
     return new Promise((resolve, reject) => {
         async.waterfall([
             (callback) => {
                 console.log("searching sounds...")
-                recursive_search(process.cwd()+dir).then((search_result) => {
+                recursive_search(process.cwd()+dir, {}).then((search_result) => {
                     console.log("sounds found")
                     callback(null, search_result)
                 })

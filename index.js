@@ -62,6 +62,8 @@ inquirer.prompt([
             (callback) => {
                 if(answers.build_list.includes('item_textures'))
                     build_item_textures(answers.build_name, answers.identifier).then(() => {callback(null)})
+                else
+                    callback(null)
             },
             (callback) => {
                 if(answers.build_list.includes('gui_textures'))
