@@ -2,6 +2,8 @@ const async = require('async')
 const fse = require("fs-extra")
 const fs = require("fs")
 
+const yaml_association = require('../yaml_association')
+
 const json = {}
 
 function build_details(build_name, pack_identifier, version, author, description, build_list) {
@@ -35,6 +37,12 @@ function build_details(build_name, pack_identifier, version, author, description
             },
             (callback) => {
                 fs.copyFile(process.cwd()+`/assets/sample/icon.png`, process.cwd()+`/build/${build_name}/pack.png`, (err) => {
+                    if(err) console.log(err)
+                    callback(null)
+                })
+            },
+            (callback) => {
+                fs.writeFile(process.cwd()+`/build/${build_name}/association.yaml`, yaml_association.get_yaml(), (err) => {
                     if(err) console.log(err)
                     callback(null)
                 })

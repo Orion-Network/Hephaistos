@@ -2,8 +2,8 @@ const {promisify} = require('util');
 const async = require('async');
 const fs = require("fs")
 const fse = require("fs-extra")
-const recursive_search = require("./utils/recursive_search");
-const {multi_bar} = require('./utils/progress_bar');
+const recursive_search = require("../utils/recursive_search");
+const {multi_bar} = require('../utils/progress_bar');
 
 //const writeFile = promisify(fs.writeFile);
 const mkdir = promisify(fs.mkdir);

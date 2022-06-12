@@ -6,8 +6,10 @@ const fs = require("fs")
 const fse = require("fs-extra")
 const {waterfall, forEachOf} = require("async")
 
-const recursive_search = require("./utils/recursive_search.js")
-const {multi_bar} = require("./utils/progress_bar.js")
+const recursive_search = require("../utils/recursive_search.js")
+const {multi_bar} = require("../utils/progress_bar.js")
+const yeml_association = require("../yaml_association.js")
+
 const Type = {
     MODEL: "model",
     PARENT: "parent"
@@ -55,13 +57,14 @@ function build_textures(build_name, pack_identifier) {
                         console.log(`${key.replace(dir, '').replaceAll("/", ".")} is not associated to any model`)
                     }
                     let parent_json = {parent: "item/handheld", textures:{layer0: key_association.parent}, overrides: []}
-                    let i = 1;
+                    let i = 0;
                     for(let item in search_result[key]) {
                         let path = search_result[key][item].path.replace(dir, '')
                         let texture_name = search_result[key][item].name
                         if(!texture_name.endsWith(".png"))
                             continue
-                        parent_json.overrides.push({predicate: {custom_model_data: i++}, model: generate_path(pack_identifier, path, texture_name)})
+                        parent_json.overrides.push({predicate: {custom_model_data: ++i}, model: generate_path(pack_identifier, path, texture_name)})
+                        yeml_association.addElement('item',`${path}/${texture_name.replace(".png","")}`, i)
                         let model_path = undefined
                         if(key_association.hasOwnProperty("model"))
                             model_path = process.cwd()+`/assets/models/${key_association.model}.json`
@@ -79,7 +82,6 @@ function build_textures(build_name, pack_identifier) {
                         if(err) console.log(err)
                         fs.writeFile(process.cwd()+`/build/${build_name}/assets/minecraft/models/item/${key_association.name}.json`, JSON.stringify(parent_json, null, 4), (err) => {
                             if(err) console.log(err)
-                            
                             callback1()
                         })
                     })

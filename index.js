@@ -5,9 +5,9 @@ const inquirer = require('inquirer');
 const {multi_bar} = require("./src/utils/progress_bar");
 
 const build_details = require("./src/builds/build_details")
-const build_sounds = require('./src/build_sounds');
-const build_item_textures = require('./src/build_item_textures');
-const build_nsft = require('./src/build_nsft');
+const build_sounds = require('./src/builds/build_sounds');
+const build_item_textures = require('./src/builds/build_item_textures');
+const build_nsft = require('./src/builds/build_nsft');
 
 
 inquirer.prompt([

@@ -30,6 +30,7 @@
     "inquirer": "^8.2.4",
     "inquirer-checkbox-plus-prompt": "^1.0.1",
     "merge-dirs": "^0.2.1",
-    "promisify": "^0.0.3"
+    "promisify": "^0.0.3",
+    "yaml": "^2.1.1"
   }
 }
