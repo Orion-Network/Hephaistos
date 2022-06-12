@@ -54,7 +54,7 @@ function build_textures(build_name, pack_identifier) {
                     if(!associations.hasOwnProperty(key.replace(dir, '').replaceAll("/", "."))) {
                         console.log(`${key.replace(dir, '').replaceAll("/", ".")} is not associated to any model`)
                     }
-                    let parent_json = {parent: "item/handheld", textures:{layer0: key_association.model}, overrides: []}
+                    let parent_json = {parent: "item/handheld", textures:{layer0: key_association.parent}, overrides: []}
                     let i = 1;
                     for(let item in search_result[key]) {
                         let path = search_result[key][item].path.replace(dir, '')
@@ -90,7 +90,7 @@ function build_textures(build_name, pack_identifier) {
                 })
             },
             (callback) => {
-                fse.copy(process.cwd()+dir, process.cwd()+`/build/${build_name}/assets/${pack_identifier}/textures/`, (err) => {
+                fse.copy(process.cwd()+dir, process.cwd()+`/build/${build_name}/assets/${pack_identifier}/textures/`, {overwrite: false}, (err) => {
                     if(err) console.log(err)
                     texture_bar.increment()
                     callback(null)

@@ -4,7 +4,7 @@ const fs = require("fs")
 
 const json = {}
 
-function build_mcmeta(build_name, pack_identifier, version, author, description) {
+function build_details(build_name, pack_identifier, version, author, description, build_list) {
     json.pack = {
         pack_format: version,
         description: description,
@@ -25,6 +25,15 @@ function build_mcmeta(build_name, pack_identifier, version, author, description)
                 })
             },
             (callback) => {
+                let credits = `Pack generated with Hephaistos made by NEXOmega https://github.com/Orion-Network/Hephaistos\n`
+                if(build_list.includes('nsft'))
+                    credits += `Pack contains NegativeSpaceFont from AmberW https://github.com/AmberWat/NegativeSpaceFont\n`
+                fs.writeFile(process.cwd()+`/build/${build_name}/credits.txt`, credits, (err) => {
+                    if(err) console.log(err)
+                    callback(null)
+                })
+            },
+            (callback) => {
                 fs.copyFile(process.cwd()+`/assets/sample/icon.png`, process.cwd()+`/build/${build_name}/pack.png`, (err) => {
                     if(err) console.log(err)
                     callback(null)
@@ -37,4 +46,4 @@ function build_mcmeta(build_name, pack_identifier, version, author, description)
     })
 }
 
-module.exports = build_mcmeta
+module.exports = build_details

@@ -4,9 +4,10 @@ const inquirer = require('inquirer');
 
 const {multi_bar} = require("./src/utils/progress_bar");
 
-const build_mcmeta = require("./src/build_mcmeta")
+const build_details = require("./src/build_details")
 const build_sounds = require('./src/build_sounds');
 const build_item_textures = require('./src/build_item_textures');
+const build_nsft = require('./src/build_nsft');
 
 
 inquirer.prompt([
@@ -19,6 +20,7 @@ inquirer.prompt([
             {name: 'Gui Textures', value: 'gui_textures'},
             {name: 'Sounds', value: 'sounds'},
             {name: 'Langs', value: 'langs'},
+            {name: 'NegativeSpaceFont', value: 'nsft'},
         ]
     },
     {
@@ -98,7 +100,13 @@ inquirer.prompt([
                     callback(null)
             },
             (callback) => {
-                build_mcmeta(answers.build_name, answers.identifier, answers.version, answers.author, answers.description).then(() => {callback(null)})
+                if(answers.build_list.includes('nsft'))
+                    build_nsft(answers.build_name).then(() => {callback(null)})
+                else
+                    callback(null)
+            },
+            (callback) => {
+                build_details(answers.build_name, answers.identifier, answers.version, answers.author, answers.description, answers.build_list).then(() => {callback(null)})
             }
         ], (err) => {
             if(err) console.log(err)
