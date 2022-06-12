@@ -3,6 +3,7 @@ const async = require('async');
 const fs = require("fs")
 const fse = require("fs-extra")
 const recursive_search = require("./utils/recursive_search");
+const {multi_bar} = require('./utils/progress_bar');
 
 //const writeFile = promisify(fs.writeFile);
 const mkdir = promisify(fs.mkdir);
@@ -24,40 +25,41 @@ function generate_json(dir, pack_identifier, search_result) {
 function build_sounds(build_name, pack_identifier) {
     sound_json = {}
     const dir = "/assets/sounds/"
+    const sound_bar = multi_bar.create(4, 0, null, {format: "Building Sounds [{bar}] {percentage}% | {value}/{total}"})
     return new Promise((resolve, reject) => {
         async.waterfall([
             (callback) => {
-                console.log("searching sounds...")
                 recursive_search(process.cwd()+dir, {}).then((search_result) => {
-                    console.log("sounds found")
+                    sound_bar.increment()
                     callback(null, search_result)
                 })
             },
             (search_result, callback) => {
-                console.log("generating json...")
                 generate_json(process.cwd()+dir, pack_identifier, search_result)
                 mkdir(process.cwd()+`/build/${build_name}/assets/${pack_identifier}`, {recursive: true}, (err) => {
                     if(err) reject(err)
+                    sound_bar.increment()
                     callback(null)
                 })
             },
             (callback) => {
-                console.log("copying sounds...")
                 fs.writeFile(process.cwd()+`/build/${build_name}/assets/${pack_identifier}/sounds.json`, JSON.stringify(sound_json, null, 4), (err) => {
                     if(err) console.log(err)
+                    sound_bar.increment()
                     callback(null)
                 })
             },
             (callback) => {
-                console.log("generating sounds files...")
                 fse.copy(process.cwd()+`/assets/sounds`, process.cwd()+`/build/${build_name}/assets/${pack_identifier}/sounds/`,
                     (err) => {
                         if(err) console.log(err)
+                        sound_bar.increment()
                         callback(null)
                     })
             }
         ], (err) => {
             if(err) reject(err)
+            sound_bar.stop()
             resolve()
         })
     })

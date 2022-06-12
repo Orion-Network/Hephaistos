@@ -1,5 +1,8 @@
 const async = require("async");
+const fs = require("fs");
 const inquirer = require('inquirer');
+
+const {multi_bar} = require("./src/utils/progress_bar");
 
 const build_mcmeta = require("./src/build_mcmeta")
 const build_sounds = require('./src/build_sounds');
@@ -54,11 +57,22 @@ inquirer.prompt([
         message: 'Are you ready to build?',
         default: true
     }]).then((answers) => {
-        console.log(answers)
         answers.identifier = answers.identifier.replaceAll(" ", "_").toLowerCase();
+        //multi_bar.log()
         if(!answers.build_ready)
             return
         async.waterfall([
+            (callback) => {
+                if(fs.existsSync(`./build/${answers.build_name}`)) {
+                    console.log("Build already exists")
+                    fs.rm(`./build/${answers.build_name}`, {recursive: true}, (err) => {
+                        if(err) console.log(err)
+                        callback(null)
+                    })
+                } else {
+                    callback(null)
+                }
+            },
             (callback) => {
                 if(answers.build_list.includes('item_textures'))
                     build_item_textures(answers.build_name, answers.identifier).then(() => {callback(null)})
@@ -86,13 +100,9 @@ inquirer.prompt([
             (callback) => {
                 build_mcmeta(answers.build_name, answers.identifier, answers.version, answers.author, answers.description).then(() => {callback(null)})
             }
-        ])
+        ], (err) => {
+            if(err) console.log(err)
+            multi_bar.stop()
+            console.log("Build finished")
+        })
     })
-
-/*
-
-build_sounds("s_test", "orion").then(() => {
-    console.log("sounds generated")
-})
-
-build_mcmeta("s_test", "orion", 7, "A test pack")*/

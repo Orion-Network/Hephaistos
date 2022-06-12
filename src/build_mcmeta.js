@@ -32,7 +32,6 @@ function build_mcmeta(build_name, pack_identifier, version, author, description)
             }
         ], (err) => {
             if(err) reject(err)
-            console.log(`${pack_identifier} pack generated`)
             resolve()
         })
     })
