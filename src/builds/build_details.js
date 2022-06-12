@@ -42,7 +42,7 @@ function build_details(build_name, pack_identifier, version, author, description
                 })
             },
             (callback) => {
-                fs.writeFile(process.cwd()+`/build/${build_name}/association.yaml`, yaml_association.get_yaml(), (err) => {
+                fs.writeFile(process.cwd()+`/build/${build_name}/association.yml`, yaml_association.get_yaml(), (err) => {
                     if(err) console.log(err)
                     callback(null)
                 })
