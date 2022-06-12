@@ -20,7 +20,7 @@ function generate_path(pack_identifier, path, texture_name) {
 function generate_json(pack_identifier, path, texture_name, model) {
     return new Promise((resolve, reject) => {
         if(model.type === Type.MODEL) {
-            fs.readFile(process.cwd()+`/assets/models/${model.model}.json`, (err, data) => {
+            fs.readFile(`assets/textures/item/${model.path}`, (err, data) => {
                 if(err) {
                     reject(err)
                 }
@@ -59,9 +59,15 @@ function build_textures(build_name, pack_identifier) {
                     for(let item in search_result[key]) {
                         let path = search_result[key][item].path.replace(dir, '')
                         let texture_name = search_result[key][item].name
+                        if(!texture_name.endsWith(".png"))
+                            continue
                         parent_json.overrides.push({predicate: {custom_model_data: i++}, model: generate_path(pack_identifier, path, texture_name)})
-
-                        generate_json(pack_identifier, path, texture_name, (key_association.hasOwnProperty("model") ? {type: Type.MODEL, model:key_association.model} : {type: Type.PARENT, model:key_association.parent})).then((json) => {
+                        let model_path = undefined
+                        if(key_association.hasOwnProperty("model"))
+                            model_path = process.cwd()+`/assets/models/${key_association.model}.json`
+                        if(fs.existsSync(process.cwd()+`/assets/textures/item/${path}/${texture_name.replace('.png','.json')}`))
+                            model_path = `${path}/${texture_name.replace('.png','.json')}`
+                        generate_json(pack_identifier, path, texture_name, (model_path != undefined ? {type: Type.MODEL, path:model_path} : {type: Type.PARENT, model:key_association.parent})).then((json) => {
                             fs.mkdir(process.cwd()+`/build/${build_name}/assets/${pack_identifier}/models/${key.replace(dir,'')}`, {recursive: true}, (err) => {
                                 fs.writeFile(process.cwd()+`/build/${build_name}/assets/${pack_identifier}/models/${key.replace(dir,'')}/${search_result[key][item].name.replace(".png","")}.json`, JSON.stringify(json, null, 4), (err) => {
                                     if(err) console.log(err)
