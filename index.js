@@ -8,7 +8,7 @@ const build_details = require("./src/builds/build_details")
 const build_sounds = require('./src/builds/build_sounds');
 const build_item_textures = require('./src/builds/build_item_textures');
 const build_nsft = require('./src/builds/build_nsft');
-
+const build_fonts = require('./src/builds/build_fonts');
 
 inquirer.prompt([
     {
@@ -19,7 +19,7 @@ inquirer.prompt([
             {name: 'Item Textures', value: 'item_textures'},
             {name: 'Gui Textures', value: 'gui_textures'},
             {name: 'Sounds', value: 'sounds'},
-            {name: 'Langs', value: 'langs'},
+            {name: 'Fonts', value: 'fonts'},
             {name: 'NegativeSpaceFont', value: 'nsft'},
         ]
     },
@@ -94,8 +94,8 @@ inquirer.prompt([
                     callback(null)
             },
             (callback) => {
-                if(answers.build_list.includes('langs'))
-                    callback(null)
+                if(answers.build_list.includes('fonts'))
+                    build_fonts(answers.build_name, answers.identifier).then(() => {callback(null)})
                 else
                     callback(null)
             },
