@@ -34,7 +34,8 @@ function build_fonts(build_name, pack_identifier) {
                         let hex = i.toString(16)
                         //if(hex.length > 4) callback(null, null)
                         const path = generate_path(pack_identifier,'font_texture/' + key.replace(dir, ''), value.name)
-                        const json = generate_json("bitmap", path, 5, 8, "\\u" + "0".repeat(parseInt(4 - hex.length)) + hex)
+                        const unicode = "0".repeat(parseInt(4 - hex.length)) + hex
+                        const json = generate_json("bitmap", path, 5, 8, String.raw`(@)${unicode}`)
                         parent_json.providers.push(json)
                         callback(null, json)
                         i++
@@ -51,7 +52,8 @@ function build_fonts(build_name, pack_identifier) {
                 forEachOf(result, (value, key, callback) => {
                     fs.mkdir(process.cwd()+`/build/${build_name}/assets/${pack_identifier}/font/`, {recursive: true}, (err) => {
                         if(err) reject(err)
-                        fs.writeFile(process.cwd()+`/build/${build_name}/assets/${pack_identifier}/font/${key.replace(dir, '')}.json`, JSON.stringify(value, null, 4), (err) => {
+                        let a = String.raw`\u`
+                        fs.writeFile(process.cwd()+`/build/${build_name}/assets/${pack_identifier}/font/${key.replace(dir, '')}.json`, JSON.stringify(value, null, 4).replaceAll('(@)', a), (err) => {
                             if(err) reject(err)
                             else callback()
                         })
@@ -63,7 +65,7 @@ function build_fonts(build_name, pack_identifier) {
             },
             (callback) => {
                 fs.mkdir(process.cwd()+`/build/${build_name}/assets/${pack_identifier}/textures/font_texture/`, {recursive: true}, (err) => {
-                    fse.copy(process.cwd()+`/build/${build_name}/assets/${pack_identifier}/textures/font_texture/`, process.cwd()+dir, (err) => {
+                    fse.copy(process.cwd()+dir, process.cwd()+`/build/${build_name}/assets/${pack_identifier}/textures/font_texture/`, (err) => {
                         if(err) reject(err)
                         callback()
                     })
