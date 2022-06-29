@@ -12,7 +12,7 @@ let sound_json;
 
 function generate_json(dir, pack_identifier, search_result) {
     for(let key in search_result) {
-        let identifier = key.replace(dir,'').replaceAll("/", ".");
+        let identifier = key.replace(dir,'').replaceAll("/", ".").replace(".assets.sounds.", '');
         if(!sound_json.hasOwnProperty(identifier))
             sound_json[identifier] = {replace: true, sounds: []};
         for(let sound in search_result[key]) {
