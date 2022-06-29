@@ -1,0 +1,18 @@
+{
+    "food.beef": {
+        "name": "cooked_beef",
+        "parent": "item/cooked_beef"
+    },
+    "food.bread": {
+        "name": "bread",
+        "parent": "item/bread"
+    },
+    "swords.dagger": {
+        "name": "wooden_sword",
+        "model": "dagger"
+    },
+    "swords.iron_sword": {
+        "name": "iron_sword",
+        "parent": "item/iron_sword"
+    }
+}
