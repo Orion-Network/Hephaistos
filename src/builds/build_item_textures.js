@@ -22,16 +22,29 @@ function generate_path(pack_identifier, path, texture_name) {
 function generate_json(pack_identifier, path, texture_name, model) {
     return new Promise((resolve, reject) => {
         if(model.type === Type.MODEL) {
-            fs.readFile(`assets/textures/item/${model.path}`, (err, data) => {
-                if(err) {
-                    reject(err)
-                }
-                else {
-                    let json = JSON.parse(data)
-                    json.textures = {layer0: generate_path(pack_identifier, path, texture_name)}
-                    resolve(json)
-                }
-            })
+            if(!model.path.startsWith(process.cwd())) {
+                fs.readFile(`assets/textures/item/${model.path}`, (err, data) => {
+                    if(err) {
+                        reject(err)
+                    }
+                    else {
+                        let json = JSON.parse(data)
+                        json.textures = {layer0: generate_path(pack_identifier, path, texture_name)}
+                        resolve(json)
+                    }
+                })
+            } else {
+                fs.readFile(model.path, (err, data) => {
+                    if(err) {
+                        reject(err)
+                    }
+                    else {
+                        let json = JSON.parse(data)
+                        json.textures = {layer0: generate_path(pack_identifier, path, texture_name)}
+                        resolve(json)
+                    }
+                })
+            }
         } else if(model.type === Type.PARENT) {
             resolve( {parent: model.model, textures: {layer0: generate_path(pack_identifier, path, texture_name)}})
         } 
