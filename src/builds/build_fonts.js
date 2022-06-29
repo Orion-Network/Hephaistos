@@ -28,7 +28,7 @@ function build_fonts(build_name, pack_identifier) {
             (search_result, callback) => {
                 const result = {}
                 forEachOf(search_result, (file, key, callback) => {
-                    let i = 0;
+                    let i = 1;
                     const parent_json = {providers:[]}
                     forEachOf(file, (value, key1, callback) => {
                         let hex = i.toString(16)
