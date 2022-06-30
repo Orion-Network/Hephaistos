@@ -2,11 +2,15 @@ const {promisify} = require('util');
 const async = require('async');
 const fs = require("fs")
 const fse = require("fs-extra")
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+const ffmpeg = require('fluent-ffmpeg');
 const recursive_search = require("../utils/recursive_search");
 const {multi_bar} = require('../utils/progress_bar');
+const { conflictResolvers } = require('merge-dirs');
 
 //const writeFile = promisify(fs.writeFile);
 const mkdir = promisify(fs.mkdir);
+ffmpeg.setFfmpegPath(ffmpegPath);
 
 let sound_json;
 
@@ -39,23 +43,55 @@ function build_sounds(build_name, pack_identifier) {
                 mkdir(process.cwd()+`/build/${build_name}/assets/${pack_identifier}`, {recursive: true}, (err) => {
                     if(err) reject(err)
                     sound_bar.increment()
-                    callback(null)
+                    callback(null, search_result)
                 })
             },
-            (callback) => {
+            (search_result, callback) => {
                 fs.writeFile(process.cwd()+`/build/${build_name}/assets/${pack_identifier}/sounds.json`, JSON.stringify(sound_json, null, 4), (err) => {
+                    if(err) console.log(err)
+                    sound_bar.increment()
+                    callback(null, search_result)
+                })
+            },
+            (search_result, callback) => {
+                async.forEachOf(search_result, (value, key, callback) => {
+                    async.forEachOf(value, (sound, sound_key, callback) => {
+                        if(sound.name.endsWith(".ogg")) {
+                            console.log(`Copying ${sound.name}`)
+                            fs.mkdir(process.cwd()+`/build/${build_name}/assets/${pack_identifier}/${sound.path.replace("/assets/","")}/`, {recursive: true}, (err) => {
+                            if(err) reject(err)
+                                fse.copyFile(process.cwd()+sound.path+"/"+sound.name, process.cwd()+`/build/${build_name}/assets/${pack_identifier}/${sound.path.replace("/assets/","")}/${sound.name}`, (err) => {
+                                    if(err) console.log(err)
+                                    sound_bar.increment()
+                                    callback(null)
+                                })
+                            })
+                        } else {
+                            console.log(`Converting ${sound.name} to an ogg file`)
+                            fs.mkdir(process.cwd()+`/build/${build_name}/assets/${pack_identifier}/${sound.path.replace("/assets/","")}/`, {recursive: true}, (err) => {
+                                if(err) reject(err)
+                                ffmpeg()
+                                .input(process.cwd()+sound.path+"/"+sound.name)
+                                .format("ogg")
+                                .output(process.cwd()+`/build/${build_name}/assets/${pack_identifier}/${sound.path.replace("/assets/","")}/${sound.name.replace(/\.[^/.]+$/, ".ogg")}`)
+                                .on('end', () => {
+                                    callback(null)
+                                }).on('error', (err) => {
+                                    reject(err)
+                                })
+                                .run()
+                            })
+                        }
+                        
+                    }, (err) => {
+                        if(err) console.log(err)
+                        callback(null)
+                    })
+                }, (err) => {
                     if(err) console.log(err)
                     sound_bar.increment()
                     callback(null)
                 })
-            },
-            (callback) => {
-                fse.copy(process.cwd()+`/assets/sounds`, process.cwd()+`/build/${build_name}/assets/${pack_identifier}/sounds/`,
-                    (err) => {
-                        if(err) console.log(err)
-                        sound_bar.increment()
-                        callback(null)
-                    })
             }
         ], (err) => {
             if(err) reject(err)
