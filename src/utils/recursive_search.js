@@ -4,7 +4,7 @@ const readdir = promisify(require("fs").readdir)
 const path = require('path');
 const { resolve } = require("path");
 
-function recursive_search(dir, files) {
+function recursive_search(dir, files = {}) {
     return new Promise((resolve, reject) => {
         async.waterfall([
             (callback) => {
@@ -22,6 +22,10 @@ function recursive_search(dir, files) {
                         if(!files.hasOwnProperty(file_path)) {
                             files[`${file_path}`] = []
                         }
+                        if(files.hasOwnProperty("length"))
+                            files.length = files.length + 1;
+                        else
+                            files.length = 1
                         files[`${file_path}`].push({name: file.name, path: file_path});
                         callback();
                     }

@@ -64,6 +64,10 @@ function build_textures(build_name, pack_identifier) {
                     callback(null, search_result)
                 })
             }, (search_result, callback) => {
+                
+                texture_bar.setTotal(search_result.length + 2)
+                delete search_result.length
+            
                 forEachOf(search_result, (value, key, callback1) => {
                     let key_association = associations[key.replace(dir, '').replaceAll("/", ".")]
                     if(!associations.hasOwnProperty(key.replace(dir, '').replaceAll("/", "."))) {
@@ -87,6 +91,7 @@ function build_textures(build_name, pack_identifier) {
                             fs.mkdir(process.cwd()+`/build/${build_name}/assets/${pack_identifier}/models/${key.replace(dir,'')}`, {recursive: true}, (err) => {
                                 fs.writeFile(process.cwd()+`/build/${build_name}/assets/${pack_identifier}/models/${key.replace(dir,'')}/${search_result[key][item].name.replace(".png","")}.json`, JSON.stringify(json, null, 4), (err) => {
                                     if(err) console.log(err)
+                                    texture_bar.increment()
                                 })
                             })
                         })

@@ -33,12 +33,14 @@ function build_sounds(build_name, pack_identifier) {
     return new Promise((resolve, reject) => {
         async.waterfall([
             (callback) => {
-                recursive_search(process.cwd()+dir, {}).then((search_result) => {
+                recursive_search(process.cwd()+dir).then((search_result) => {
                     sound_bar.increment()
                     callback(null, search_result)
                 })
             },
             (search_result, callback) => {
+                sound_bar.setTotal(search_result.length + 3)
+                delete search_result.length
                 generate_json(process.cwd()+dir, pack_identifier, search_result)
                 mkdir(process.cwd()+`/build/${build_name}/assets/${pack_identifier}`, {recursive: true}, (err) => {
                     if(err) reject(err)
@@ -57,7 +59,6 @@ function build_sounds(build_name, pack_identifier) {
                 async.forEachOf(search_result, (value, key, callback) => {
                     async.forEachOf(value, (sound, sound_key, callback) => {
                         if(sound.name.endsWith(".ogg")) {
-                            console.log(`Copying ${sound.name}`)
                             fs.mkdir(process.cwd()+`/build/${build_name}/assets/${pack_identifier}/${sound.path.replace("/assets/","")}/`, {recursive: true}, (err) => {
                             if(err) reject(err)
                                 fse.copyFile(process.cwd()+sound.path+"/"+sound.name, process.cwd()+`/build/${build_name}/assets/${pack_identifier}/${sound.path.replace("/assets/","")}/${sound.name}`, (err) => {
@@ -67,7 +68,6 @@ function build_sounds(build_name, pack_identifier) {
                                 })
                             })
                         } else {
-                            console.log(`Converting ${sound.name} to an ogg file`)
                             fs.mkdir(process.cwd()+`/build/${build_name}/assets/${pack_identifier}/${sound.path.replace("/assets/","")}/`, {recursive: true}, (err) => {
                                 if(err) reject(err)
                                 ffmpeg()
