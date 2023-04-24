@@ -1,0 +1,16 @@
+{
+    "color": {
+        "red": 123,
+        "green": 43,
+        "blue": 0
+    },
+    "animation": {
+        "frames": 2,
+        "speed": 1,
+        "interpolation": 0
+    },
+    "extra": {
+        "emisivity": 0,
+        "tint": 0
+    }
+}

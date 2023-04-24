@@ -5,6 +5,7 @@ const inquirer = require('inquirer');
 const {multi_bar} = require("./src/utils/progress_bar");
 
 const build_details = require("./src/builds/build_details")
+const build_fancyPants = require("./src/builds/build_fancyPants")
 const build_sounds = require('./src/builds/build_sounds');
 const build_item_textures = require('./src/builds/build_item_textures');
 const build_nsft = require('./src/builds/build_nsft');
@@ -21,6 +22,7 @@ inquirer.prompt([
             {name: 'Sounds', value: 'sounds'},
             {name: 'Fonts', value: 'fonts'},
             {name: 'NegativeSpaceFont', value: 'nsft'},
+            {name: 'fancyPants', value: 'fancyPants'}
         ]
     },
     {
@@ -102,6 +104,12 @@ inquirer.prompt([
             (callback) => {
                 if(answers.build_list.includes('nsft'))
                     build_nsft(answers.build_name).then(() => {callback(null)})
+                else
+                    callback(null)
+            },
+            (callback) => {
+                if(answers.build_list.includes('fancyPants'))
+                    build_fancyPants(answers.build_name).then(() => {callback(null)})
                 else
                     callback(null)
             },
