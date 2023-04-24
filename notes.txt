@@ -1,0 +1,24 @@
+
+// Naming convention for the file is: <frame_number>.<layer>.json
+fs.readdir(process.cwd()+`/assets/textures/armor`, (err, files) => {
+                    console.log(files);
+                    async.forEachOf(files, (file, key, callback1) => {
+                        fs.readdir(process.cwd()+`/assets/textures/armor/${file}`, (err, files) => {
+                            async.forEachOf(files, (file, key, callback2) => {
+                                if(file.endsWith(".png")) {
+                                    let num = parseInt(file.split("_")[0])
+                                    if(num > max)
+                                        max = num
+                                    callback2
+                                }
+                            }, (err) => {
+                                if(err) console.log(err)
+                                callback1(null, max)
+                            })
+                        })
+                    }, (err) => {
+                        if(err) console.log(err)
+                        callback(null, max)
+                        console.log(max);
+                    })
+                })

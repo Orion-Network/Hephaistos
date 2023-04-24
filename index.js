@@ -9,6 +9,7 @@ const build_sounds = require('./src/builds/build_sounds');
 const build_item_textures = require('./src/builds/build_item_textures');
 const build_nsft = require('./src/builds/build_nsft');
 const build_fonts = require('./src/builds/build_fonts');
+const build_gui = require('./src/builds/build_gui');
 
 inquirer.prompt([
     {
@@ -83,7 +84,7 @@ inquirer.prompt([
             },
             (callback) => {
                 if(answers.build_list.includes('gui_textures'))
-                    callback(null)
+                    build_gui(answers.build_name, answers.identifier).then(() => {callback(null)})
                 else
                     callback(null)
             },
